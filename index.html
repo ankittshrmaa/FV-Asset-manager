@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asset Registration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="page">
+
+<div class="logo">
+  <img src="headerLogo.svg" alt="Company Logo" class="logo-img">
+</div>
+
+<h2>Asset Registration Form</h2>
+<p class="subtitle">Register your assigned computer equipment</p>
+
+<form id="assetForm">
+  
+  <fieldset>
+    <legend>Employee Details</legend>
+    <input name="name" placeholder="Your Name *" required>
+    <input name="department" placeholder="Department *" required>
+    <input name="hostname" placeholder="Computer Name/Hostname *" required>
+  </fieldset>
+
+  <fieldset>
+    <legend>Computer Details</legend>
+    <select id="deviceType" name="device_type" required>
+      <option value="">Device Type *</option>
+      <option value="desktop">Desktop</option>
+      <option value="laptop">Laptop</option>
+    </select>
+
+    <input name="processor" placeholder="Processor (e.g. i5 10th Gen) *" required>
+    <input name="ram" placeholder="RAM (e.g. 16GB) *" required>
+    <input name="disk" placeholder="Disk (e.g. 512GB SSD) *" required>
+
+    <label>Antivirus Installed? *</label>
+    <select name="antivirus_installed" required>
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+
+    <div id="laptopFields" class="hidden">
+      <input name="laptop_brand" placeholder="Laptop Brand/Model">
+      <input name="laptop_sn" placeholder="Laptop Serial Number">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Monitor</legend>
+    <select id="hasMonitor" name="has_monitor">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+
+    <div id="monitorContainer" class="hidden">
+      <div class="monitor">
+        <input name="monitor_brand[]" placeholder="Monitor Brand">
+        <input name="monitor_sn[]" placeholder="Monitor Serial Number">
+        <button type="button" class="btn-remove" onclick="removeMonitor(this)">✕</button>
+      </div>
+      <button type="button" id="addMonitor" class="btn-add">+ Add Another Monitor</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Keyboard</legend>
+    <select id="hasKeyboard" name="has_keyboard">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+    <div id="keyboardFields" class="hidden">
+      <input name="keyboard_brand" placeholder="Keyboard Brand">
+      <input name="keyboard_sn" placeholder="Keyboard Serial Number">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Mouse</legend>
+    <select id="hasMouse" name="has_mouse">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+    <div id="mouseFields" class="hidden">
+      <input name="mouse_brand" placeholder="Mouse Brand">
+      <input name="mouse_sn" placeholder="Mouse Serial Number">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Headphone</legend>
+    <select id="hasHeadphone" name="has_headphone">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+    <div id="headphoneFields" class="hidden">
+      <input name="headphone_brand" placeholder="Headphone Brand">
+      <input name="headphone_sn" placeholder="Headphone Serial Number">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Webcam</legend>
+    <select id="hasWebcam" name="has_webcam">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+    <div id="webcamContainer" class="hidden">
+      <input name="webcam_brand" placeholder="Webcam Brand">
+      <input name="webcam_sn" placeholder="Webcam Serial Number">
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Additional Notes</legend>
+    <textarea name="notes" rows="3" placeholder="Any other equipment or notes..."></textarea>
+  </fieldset>
+
+  <div class="form-actions">
+    <button type="submit" id="submitBtn">Submit Asset</button>
+    <button type="button" class="btn-secondary" onclick="resetForm()">Clear Form</button>
+  </div>
+  
+  <div id="formMessage"></div>
+</form>
+
+<div class="footer-note">
+  <p>💾 Your data is saved to Excel. IT Department will review your submission.</p>
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+// ============ REMOVE MONITOR ============
+function removeMonitor(btn) {
+  const container = document.getElementById('monitorContainer');
+  const monitors = container.querySelectorAll('.monitor');
+  if (monitors.length > 1) {
+    btn.parentElement.remove();
+  }
+}
+
+// ============ RESET FORM ============
+function resetForm() {
+  document.getElementById('assetForm').reset();
+  resetToggles();
+  document.getElementById('formMessage').innerHTML = '';
+}
+
+// ============ RESET TOGGLES ============
+function resetToggles() {
+  document.querySelectorAll('[id$="Fields"], #monitorContainer, #webcamContainer').forEach(el => {
+    el.classList.add('hidden');
+    el.querySelectorAll('input').forEach(i => i.value = '');
+  });
+  // Reset monitor to single
+  const monitorContainer = document.getElementById('monitorContainer');
+  monitorContainer.innerHTML = `
+    <div class="monitor">
+      <input name="monitor_brand[]" placeholder="Monitor Brand">
+      <input name="monitor_sn[]" placeholder="Monitor Serial Number">
+      <button type="button" class="btn-remove" onclick="removeMonitor(this)">✕</button>
+    </div>
+    <button type="button" id="addMonitor" class="btn-add">+ Add Another Monitor</button>
+  `;
+  document.getElementById('addMonitor').addEventListener('click', addMonitorHandler);
+}
+
+// ============ ADD MONITOR ============
+function addMonitorHandler() {
+  const container = document.getElementById('monitorContainer');
+  const div = document.createElement('div');
+  div.className = 'monitor';
+  div.innerHTML = `
+    <input name="monitor_brand[]" placeholder="Monitor Brand">
+    <input name="monitor_sn[]" placeholder="Monitor Serial Number">
+    <button type="button" class="btn-remove" onclick="removeMonitor(this)">✕</button>
+  `;
+  container.insertBefore(div, container.querySelector('.btn-add'));
+}
+
+document.getElementById('addMonitor').addEventListener('click', addMonitorHandler);
+
+// ============ FORM SUBMIT ============
+document.getElementById('assetForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const btn = document.getElementById('submitBtn');
+  const messageDiv = document.getElementById('formMessage');
+  
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  messageDiv.innerHTML = '';
+  
+  try {
+    const formData = new FormData(this);
+    const response = await fetch('/api/submit', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.status === 'saved') {
+      messageDiv.innerHTML = `<div class="success">
+        ✓ <strong>Asset Registered Successfully!</strong><br>
+        Your Asset ID: <span class="asset-id">${result.asset_id}</span>
+      </div>`;
+      this.reset();
+      resetToggles();
+      setTimeout(() => messageDiv.innerHTML = '', 8000);
+    } else {
+      messageDiv.innerHTML = `<div class="error">Error: ${result.message || 'Failed to save'}</div>`;
+    }
+  } catch (err) {
+    messageDiv.innerHTML = `<div class="error">⚠ Network error. Please check your connection and try again.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Submit Asset';
+  }
+});
+</script>
+
+</body>
+</html>
