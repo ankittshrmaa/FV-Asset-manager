@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 import pandas as pd
 from datetime import datetime
 import os
@@ -10,6 +12,9 @@ import io
 from typing import List, Optional
 
 app = FastAPI(title="Asset Manager API")
+
+# Serve static files (frontend)
+app.mount("/static", StaticFiles(directory="."), name="static")
 
 # Enable CORS for frontend
 app.add_middleware(
